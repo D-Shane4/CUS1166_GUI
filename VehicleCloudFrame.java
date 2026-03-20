@@ -154,18 +154,27 @@ public class VehicleCloudFrame extends JFrame {
     private void attachListeners() {
         ownerButton.addActionListener(e -> cardLayout.show(cards, "Owner"));
         clientButton.addActionListener(e -> cardLayout.show(cards, "Client"));
-
+        controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
+        //home buttons
+        controllerHomeButton.addActionListener(e-> goHome());
         ownerHomeButton.addActionListener(e -> goHome());
         clientHomeButton.addActionListener(e -> goHome());
-
+       //submit buttons
         ownerSubmitButton.addActionListener(e -> handleOwnerSubmit());
         clientSubmitButton.addActionListener(e -> handleClientSubmit());
+        //clear buttons
+        ownerClearButton.addActionListener(e -> handleClear());
+        ownerClearButton.addActionListener(e -> handleClear());
+        controllerClearButton.addActionListener(e -> handleClear());
+
+        computeCompletion.addActionListener(e -> handleComputation());
     }
 
     // Gianna: clear all fields
     private void handleClear() {
         ownerIDField.setText("");
         vehicleIDField.setText("");
+        controllerIdField.setText("");
         vehicleModelField.setText("");
         vehicleMakeField.setText("");
         vehicleYearField.setText("");
@@ -175,6 +184,10 @@ public class VehicleCloudFrame extends JFrame {
         jobDurationField.setText("");
         jobDeadlineField.setText("");
     }
+
+
+
+  
 
     // Gianna: owner submit handler
     private void handleOwnerSubmit() {
@@ -238,8 +251,96 @@ public class VehicleCloudFrame extends JFrame {
                 "Invalid deadline format. Please use: yyyy-MM-ddTHH:mm\nExample: 2025-04-01T14:30");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
+
         }
     }
+    private void handleComputation(){
+    try{
+
+   //Load jobs from file
+   //possibly mehmets part
+        File file = new File("/file that holds jobs"); 
+
+        List<Job> jobs = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.isBlank()) continue;
+
+                
+                String[] parts = line.split("\\|");
+                if (parts.length < 4) {
+                    throw new IllegalArgumentException("Invalid line: " + line);
+                }
+
+                String jobID        = parts[0].trim().split(":", 2)[1].trim(); // after "Client ID:"
+                LocalDateTime ts = LocalDateTime.parse(parts[1].trim().split(":", 2)[1].trim()); // after "Timestamp:"
+                int duration     = Integer.parseInt(parts[2].trim().split(":", 2)[1].trim()); // after "Approx job duration (min):"
+                LocalDateTime deadline = LocalDateTime.parse(parts[3].trim().split(":", 2)[1].trim()); // after "Job deadline:"
+
+                Job j = new Job(jobID, duration, deadline);
+                j.setTime(ts);
+                jobs.add(j);
+            }
+        }
+
+        if (jobs.isEmpty()) {
+            outputArea.setText("No jobs found.");
+            return;
+        }
+
+        // Sort by arrival time for FCFS order
+        jobs.sort(Comparator.comparing(Job::getTime));
+
+        // Enqueue in arrival order 
+        Deque<Client> queue = new ArrayDeque<>(clients);
+
+        // Dequeue and compute start/completion times
+        LocalDateTime current = null;
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            Job j = queue.pollFirst();
+
+
+            LocalDateTime arrival = j.getTime();
+            if (current == null || current.isBefore(arrival)) {
+                //CPU idle until job arrives
+                current = arrival;
+            }
+
+            LocalDateTime start = current;
+            LocalDateTime completion = start.plusMinutes(j.getJobDurationMinutes());
+
+            long waitMin = Duration.between(arrival, start).toMinutes();
+            long tatMin = Duration.between(arrival, completion).toMinutes();
+            Long latenessMin = null;
+            if (j.getJobDeadline() != null) {
+                long diff = Duration.between(j.getJobDeadline(), completion).toMinutes();
+                latenessMin = Math.max(0, diff);
+            }
+           
+            sb.append("Job ")
+              .append(j.getID())
+              .append(" | Arrival: ").append(arrival)
+              .append(" | Start: ").append(start)
+              .append(" | Completion: ").append(completion)
+              .append(" | Wait(min): ").append(waitMin)
+              .append(" | Turnaround(min): ").append(tatMin);
+            if (latenessMin != null) sb.append(" | Lateness(min): ").append(latenessMin);
+            sb.append('\n');
+
+            // Advance the CPU time to the completion of this job
+            current = completion;
+        }
+
+        // Display results
+        outputArea.setText(sb.toString());
+
+        
+    } catch (Exception ex) {
+        outputArea.setText("Error computing completion times: " + ex.getMessage());
+    }
+}
 
     // Gianna: go back home
     private void goHome() {
