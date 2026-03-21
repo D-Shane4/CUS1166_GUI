@@ -3,8 +3,13 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 
 public class VehicleCloudFrame extends JFrame {
+
+    //vc conttroller
+    private final VCController vc = new VCController("VC-001");
+    private JTextArea outputArea;
 
     // ── Shanti: frame-level layout reference
     private CardLayout cardLayout;
@@ -254,35 +259,30 @@ public class VehicleCloudFrame extends JFrame {
 
         }
     }
-    private void handleComputation(){
-    try{
-
-   //Load jobs from file
-   //possibly mehmets part
-        File file = new File("/file that holds jobs"); 
-
-        List<Job> jobs = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
+    private void handleComputation(File file){
+    
+    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+        List<Job> jobs= new ArrayList<>();
+        String line;
             while ((line = br.readLine()) != null) {
                 if (line.isBlank()) continue;
 
                 
                 String[] parts = line.split("\\|");
-                if (parts.length < 4) {
+                if (parts.length < 5) {
                     throw new IllegalArgumentException("Invalid line: " + line);
                 }
+                // part 1 
+                String clientID = parts[0].split(":",2)[1].trim();
+                String jobID = parts[1].trim().split(":", 2)[1].trim(); 
+                LocalDateTime arrival = LocalDateTime.parse(parts[2].trim().split(":", 2)[1].trim()); // after "Timestamp:"
+                int duration     = Integer.parseInt(parts[3].trim().split(":", 2)[1].trim()); // after "Approx job duration (min):"
+                LocalDateTime deadline = LocalDateTime.parse(parts[4].trim().split(":", 2)[1].trim()); // after "Job deadline:"
 
-                String jobID        = parts[0].trim().split(":", 2)[1].trim(); // after "Client ID:"
-                LocalDateTime ts = LocalDateTime.parse(parts[1].trim().split(":", 2)[1].trim()); // after "Timestamp:"
-                int duration     = Integer.parseInt(parts[2].trim().split(":", 2)[1].trim()); // after "Approx job duration (min):"
-                LocalDateTime deadline = LocalDateTime.parse(parts[3].trim().split(":", 2)[1].trim()); // after "Job deadline:"
-
-                Job j = new Job(jobID, duration, deadline);
-                j.setTime(ts);
+                Job j = new Job(clientID,jobID, arrival, null, duration, deadline);
                 jobs.add(j);
             }
-        }
+        
 
         if (jobs.isEmpty()) {
             outputArea.setText("No jobs found.");
@@ -290,57 +290,24 @@ public class VehicleCloudFrame extends JFrame {
         }
 
         // Sort by arrival time for FCFS order
-        jobs.sort(Comparator.comparing(Job::getTime));
-
-        // Enqueue in arrival order 
-        Deque<Client> queue = new ArrayDeque<>(clients);
-
-        // Dequeue and compute start/completion times
-        LocalDateTime current = null;
-        StringBuilder sb = new StringBuilder();
-        while (!queue.isEmpty()) {
-            Job j = queue.pollFirst();
-
-
-            LocalDateTime arrival = j.getTime();
-            if (current == null || current.isBefore(arrival)) {
-                //CPU idle until job arrives
-                current = arrival;
-            }
-
-            LocalDateTime start = current;
-            LocalDateTime completion = start.plusMinutes(j.getJobDurationMinutes());
-
-            long waitMin = Duration.between(arrival, start).toMinutes();
-            long tatMin = Duration.between(arrival, completion).toMinutes();
-            Long latenessMin = null;
-            if (j.getJobDeadline() != null) {
-                long diff = Duration.between(j.getJobDeadline(), completion).toMinutes();
-                latenessMin = Math.max(0, diff);
-            }
-           
-            sb.append("Job ")
-              .append(j.getID())
-              .append(" | Arrival: ").append(arrival)
-              .append(" | Start: ").append(start)
-              .append(" | Completion: ").append(completion)
-              .append(" | Wait(min): ").append(waitMin)
-              .append(" | Turnaround(min): ").append(tatMin);
-            if (latenessMin != null) sb.append(" | Lateness(min): ").append(latenessMin);
-            sb.append('\n');
-
-            // Advance the CPU time to the completion of this job
-            current = completion;
-        }
-
-        // Display results
-        outputArea.setText(sb.toString());
+        jobs.sort(Comparator.comparing(Job::getArrivalTime));
 
         
-    } catch (Exception ex) {
-        outputArea.setText("Error computing completion times: " + ex.getMessage());
-    }
-}
+        for (Job j : jobs){
+            vc.assignJob(j);
+        } 
+        LocalDateTime start = LocalDateTime.now();
+        String report = vc.completion(start);
+
+        outputArea.setText("==== Starting at" + start + "====\n" + report);
+           
+            }catch (Exception e){
+                outputArea.setText("Error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+       
+
 
     // Gianna: go back home
     private void goHome() {
