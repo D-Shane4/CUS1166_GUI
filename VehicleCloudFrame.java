@@ -24,6 +24,7 @@ public class VehicleCloudFrame extends JFrame {
     // ── Hawa: radio buttons on home screen
     private JRadioButton ownerButton;
     private JRadioButton clientButton;
+    private JRadioButton controllerButton;
 
     //--Hawa: Start Button on Home page
     private JButton startButton;
@@ -43,10 +44,8 @@ public class VehicleCloudFrame extends JFrame {
     private JTextField jobDeadlineField;
 
     //-- Hawa: Controller Panel Components
-    private JTextField controllerIdField;
-    private JButton controllerButton;
+    //private JTextField controllerIdField;
     private JButton controllerHomeButton;
-    private JButton controllerClearButton;
     private JButton computeCompletion;
 
     // ── Hawa: submit buttons (declared at class level so listeners can reference them)
@@ -115,43 +114,44 @@ public class VehicleCloudFrame extends JFrame {
         homePanel.setBackground(new Color(255, 220, 230));
 
         JLabel questionLabel = new JLabel("What type of user are you?");
-        questionLabel.setBounds(150, 60, 250, 30);
+        questionLabel.setBounds(180, 60, 250, 100);
         homePanel.add(questionLabel);
 
         ownerButton = new JRadioButton("Owner");
-        ownerButton.setBounds(150, 110, 100, 30);
+        ownerButton.setBounds(100, 110, 100, 180);
         ownerButton.setBackground(new Color(255, 220, 230));
 
         clientButton = new JRadioButton("Client");
-        clientButton.setBounds(270, 110, 100, 30);
+        clientButton.setBounds(220, 110, 100, 180);
         clientButton.setBackground(new Color(255, 220, 230));
 
-        controllerButton = new JButton("Controller");
-        controllerButton.setBounds(200, 160, 120, 30);
-        homePanel.add(controllerButton);
+        controllerButton = new JRadioButton("Controller");
+        controllerButton.setBounds(320, 110, 100, 180);
+        controllerButton.setBackground(new Color(255,220,230));
 
         ButtonGroup group = new ButtonGroup();
         group.add(ownerButton);
         group.add(clientButton);
+        group.add(controllerButton);
 
         homePanel.add(ownerButton);
         homePanel.add(clientButton);
+        homePanel.add(controllerButton);
 
         // Controller Panel
         JPanel controllerPanel = new JPanel(new GridLayout(5, 1, 0, 5));
         controllerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         controllerPanel.add(makeLabel("Controller Panel"));
-        controllerPanel.add(makeRow("Controller ID:", controllerIdField = new JTextField(15)));
 
         JPanel controllerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         computeCompletion = new JButton("Compute Completion");
         controllerHomeButton = new JButton("Home");
-        controllerClearButton = new JButton("Clear");
+        //controllerClearButton = new JButton("Clear");
 
         controllerButtons.add(computeCompletion);
-        controllerButtons.add(controllerClearButton);
+        //controllerButtons.add(controllerClearButton);
         controllerButtons.add(controllerHomeButton);
 
         controllerPanel.add(controllerButtons);
@@ -248,7 +248,6 @@ public class VehicleCloudFrame extends JFrame {
 
         // clear buttons
         ownerClearButton.addActionListener(e -> handleClear());
-        controllerClearButton.addActionListener(e -> handleClear());
         clientClearButton.addActionListener(e -> handleClear());
 
         // FIX: open a JFileChooser so the user can select the log file,
@@ -269,7 +268,7 @@ public class VehicleCloudFrame extends JFrame {
     private void handleClear() {
         ownerIDField.setText("");
         vehicleIDField.setText("");
-        controllerIdField.setText("");
+        //controllerIdField.setText("");
         vehicleModelField.setText("");
         vehicleMakeField.setText("");
         vehicleYearField.setText("");
