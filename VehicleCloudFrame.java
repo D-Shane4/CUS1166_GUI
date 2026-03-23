@@ -44,7 +44,6 @@ public class VehicleCloudFrame extends JFrame {
     private JTextField jobDeadlineField;
 
     //-- Hawa: Controller Panel Components
-    //private JTextField controllerIdField;
     private JButton controllerHomeButton;
     private JButton computeCompletion;
 
@@ -148,10 +147,8 @@ public class VehicleCloudFrame extends JFrame {
 
         computeCompletion = new JButton("Compute Completion");
         controllerHomeButton = new JButton("Home");
-        //controllerClearButton = new JButton("Clear");
 
-        controllerButtons.add(computeCompletion);
-        //controllerButtons.add(controllerClearButton);
+        controllerButtons.add(computeCompletion);     
         controllerButtons.add(controllerHomeButton);
 
         controllerPanel.add(controllerButtons);
@@ -268,7 +265,6 @@ public class VehicleCloudFrame extends JFrame {
     private void handleClear() {
         ownerIDField.setText("");
         vehicleIDField.setText("");
-        //controllerIdField.setText("");
         vehicleModelField.setText("");
         vehicleMakeField.setText("");
         vehicleYearField.setText("");
