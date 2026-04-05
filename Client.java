@@ -9,13 +9,16 @@ public class Client extends User {
 
 	private int jobDurationMinutes;
 	private LocalDateTime jobDeadline;
+	private final String requestID;
 
 // clientID is passed to the parent class(user) as the ID 
 	public Client(String clientID, int jobDurationMinutes, LocalDateTime jobDeadline) {
 		super(clientID);
 		this.jobDurationMinutes = jobDurationMinutes;
 		this.jobDeadline = jobDeadline;
+		this.requestID = clientID + "-" + System.currentTimeMillis();
 	}
+
 
 	public int getJobDurationMinutes() {
 		return jobDurationMinutes;
@@ -27,7 +30,7 @@ public class Client extends User {
 
 	@Override
 	public String fileText() {
-		return "Client ID: " + ID + " | Timestamp: " + time + " | Approx job duration (min): " + jobDurationMinutes
+		return "Request ID: " + requestID + " | Client ID: " + ID + " | Timestamp: " + time + " | Approx job duration (min): " + jobDurationMinutes
 				+ " | Job deadline: " + jobDeadline;
 		}
 	   public String jobRequest(String host, int port) {
