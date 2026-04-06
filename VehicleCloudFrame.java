@@ -35,7 +35,7 @@ public class VehicleCloudFrame extends JFrame {
 
     // ── Hawa: Client panel fields
     private JTextField clientIDField;
-    private JTextField jobDurationField;
+    private JComboBox<String> jobDurationBox;
     private JTextField jobDeadlineField;
 
     // ── Hawa: submit buttons (declared at class level so listeners can reference them)
@@ -72,6 +72,13 @@ public class VehicleCloudFrame extends JFrame {
     // FIX: all JTextFields now stored as named instance variables so listeners can read them
     // FIX: submit/home buttons declared at class level instead of locally
     private void createComponents() {
+
+        String[] durations = new String[61];
+        durations[0] = "Select Minutes";
+        for (int i = 1; i <= 60; i++) {
+            durations[i] = String.valueOf(i);
+        }
+        jobDurationBox = new JComboBox<>(durations);
 
         // Title
         JLabel titleLabel = new JLabel("Vehicular Cloud Console", JLabel.CENTER);
@@ -232,7 +239,7 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         clientPanel.add(makeLabel("Client Registration"));
 
         clientPanel.add(makeRow("Client ID:",             clientIDField   = new JTextField(15)));
-        clientPanel.add(makeRow("Job Duration (min):",    jobDurationField = new JTextField(15)));
+        clientPanel.add(makeRow("Job Duration (min):", jobDurationBox));
         clientPanel.add(makeRow("Job Deadline (yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
 
         JPanel clientButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -354,7 +361,7 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
         departureAmPmBox.setSelectedIndex(0);
 
         clientIDField.setText("");
-        jobDurationField.setText("");
+        jobDurationBox.setSelectedIndex(0);
         jobDeadlineField.setText("");
     }
     
@@ -432,7 +439,12 @@ new Thread(() -> {
     private void handleClientSubmit() {
         try {
             String clientID          = clientIDField.getText().trim();
-            int    jobDurationMinutes = Integer.parseInt(jobDurationField.getText().trim());
+           if (jobDurationBox.getSelectedIndex() == 0) {
+    JOptionPane.showMessageDialog(this, "Please select a job duration.");
+    return;
+}
+
+        int jobDurationMinutes = Integer.parseInt((String) jobDurationBox.getSelectedItem());
             LocalDateTime jobDeadline = LocalDateTime.parse(
                 jobDeadlineField.getText().trim(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
