@@ -13,6 +13,12 @@ import java.util.ArrayList;
 
 public class VehicleCloudFrame extends JFrame {
 
+    // ── Javonda: VC Controller request review components
+    private JTextArea controllerRequestArea;
+    private JButton acceptButton;
+    private JButton rejectButton;
+    private Timer controllerRefreshTimer;
+
     //vc conttroller
     private final VCController vc = new VCController("VC-001");
     private JTextArea outputArea;
@@ -62,6 +68,7 @@ public class VehicleCloudFrame extends JFrame {
         setupFrame();       // Shanti
         createComponents(); // Hawa
         attachListeners();  // Gianna
+        startControllerRefresh(); // Javonda
         setVisible(true);
     }
 
@@ -156,26 +163,39 @@ public class VehicleCloudFrame extends JFrame {
         gbc.gridx = 2;
         homePanel.add(controllerButton, gbc);
         
-        // Controller Panel
-        JPanel controllerPanel = new JPanel(new GridLayout(5, 1, 0, 5));
+        // Javonda: Controller Panel EDITED 
+        JPanel controllerPanel = new JPanel(new BorderLayout(10, 10));
         controllerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        controllerPanel.add(makeLabel("Controller Panel"));
+        JLabel controllerTitle = makeLabel("VC Controller Panel");
+        controllerPanel.add(controllerTitle, BorderLayout.NORTH);
 
+        // Javonda: center area showing one pending request at a time EDITED
+        controllerRequestArea = new JTextArea(10, 30);
+        controllerRequestArea.setEditable(false);
+        controllerRequestArea.setLineWrap(true);
+        controllerRequestArea.setWrapStyleWord(true);
+        controllerRequestArea.setText("No pending request.");
+        controllerPanel.add(new JScrollPane(controllerRequestArea), BorderLayout.CENTER);
+
+        // Javonda: controller action buttons EDITED
         JPanel controllerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         computeCompletion = new JButton("Compute Completion");
+        acceptButton = new JButton("Accept");
+        rejectButton = new JButton("Reject");
         controllerHomeButton = new JButton("Home");
 
-        controllerButtons.add(computeCompletion);     
+        controllerButtons.add(computeCompletion);
+        controllerButtons.add(acceptButton);
+        controllerButtons.add(rejectButton);
         controllerButtons.add(controllerHomeButton);
 
-        controllerPanel.add(controllerButtons);
+        controllerPanel.add(controllerButtons, BorderLayout.SOUTH);
 
-        // output
+        //  Javonda: optional output area for completion report EDITED
         outputArea = new JTextArea(8, 30);
         outputArea.setEditable(false);
-        controllerPanel.add(new JScrollPane(outputArea));
 
         // Owner Panel 
         JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
@@ -265,6 +285,10 @@ public class VehicleCloudFrame extends JFrame {
         ownerClearButton.addActionListener(e -> handleClear());
         ownerClearButton.addActionListener(e -> handleClear());
         clientClearButton.addActionListener(e -> handleClear());
+
+        // Javonda: controller decision buttons
+        acceptButton.addActionListener(e -> handleControllerDecision("ACCEPTED"));
+        rejectButton.addActionListener(e -> handleControllerDecision("REJECTED"));
 
         computeCompletion.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
@@ -415,5 +439,43 @@ public class VehicleCloudFrame extends JFrame {
     private void goHome() {
         handleClear();
         cardLayout.show(cards, "Home");
+    }
+    // Javonda: refresh controller screen so it shows one pending request at a time
+private void startControllerRefresh() {
+    controllerRefreshTimer = new Timer(1000, e -> {
+        String pending = VCServer.getPendingRequest();
+
+        if (pending != null) {
+            controllerRequestArea.setText(pending);
+
+            // show popup only once per request
+            if (!pending.equals(VCServer.getLastDisplayedRequest())) {
+                JOptionPane.showMessageDialog(this,
+                    "New Request Received:\n\n" + pending);
+                VCServer.setLastDisplayedRequest(pending);
+            }
+        } else {
+            controllerRequestArea.setText("No pending request.");
+        }
+    });
+
+    controllerRefreshTimer.start();
+}
+
+// Javonda: accept or reject the current request
+    private void handleControllerDecision(String decision) {
+        String pending = VCServer.getPendingRequest();
+
+        if (pending == null) {
+            JOptionPane.showMessageDialog(this, "There is no pending request to review.");
+            return;
+        }
+
+        VCServer.setDecision(decision);
+
+        JOptionPane.showMessageDialog(this,
+            "Request " + decision + " by VC Controller.");
+
+        controllerRequestArea.setText("No pending request.");
     }
 }
