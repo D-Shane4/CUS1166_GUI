@@ -285,8 +285,8 @@ public class VehicleCloudFrame extends JFrame {
 
   
 
-    // Gianna: owner submit handler
-    private void handleOwnerSubmit() {
+    // Gianna: owner submit handler (EDITED & PATCHED BY MEHMET)
+     private void handleOwnerSubmit() {
         try {
             String ownerID       = ownerIDField.getText().trim();
             String vehicleID     = vehicleIDField.getText().trim();
@@ -295,27 +295,37 @@ public class VehicleCloudFrame extends JFrame {
             int    vehicleYear   = Integer.parseInt(vehicleYearField.getText().trim());
             String arrivalTime   = arrivalTimeField.getText().trim();
             String departureTime = departureTimeField.getText().trim();
-
+ 
             if (ownerID.isEmpty() || vehicleID.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Owner ID and Vehicle ID are required.");
                 return;
             }
-
+ 
             Owner owner = new Owner(ownerID, vehicleID, vehicleModel, vehicleMake,
                                     vehicleYear, arrivalTime, departureTime);
-
-            FileManager.saveUser(owner); 
-            JOptionPane.showMessageDialog(this,
-                "Owner Registered Successfully!\nOwner ID: " + ownerID +
-                "\nData saved to vehicular_cloud_log.txt"); 
-
+ 
+            // Send to VC Controller server and receive decision  ← SOCKET PATH
+            // (mirrors handleClientSubmit — server now owns the file write)
+            String result = owner.sendVehicleInfo("localhost", 5000);
+ 
+            if ("ACCEPTED".equals(result)) {
+                JOptionPane.showMessageDialog(this,
+                    "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
+                    "\nData saved to vehicular_cloud_log.txt");
+            } else if ("REJECTED".equals(result)) {
+                JOptionPane.showMessageDialog(this,
+                    "Registration Rejected by VC Controller.\nData was NOT saved.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Server Communication Error.");
+            }
+ 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Vehicle Year must be a valid number.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
         }
     }
-
+    
     // Gianna: client submit handler
     private void handleClientSubmit() {
         try {
