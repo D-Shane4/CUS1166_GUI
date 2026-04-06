@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class VehicleCloudFrame extends JFrame {
 
-    // ── Javonda: VC Controller request review components
+    // Javonda: VC Controller request review components
     private JTextArea controllerRequestArea;
     private JButton acceptButton;
     private JButton rejectButton;
@@ -348,26 +348,31 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
  
             // Send to VC Controller server and receive decision  ← SOCKET PATH
             // (mirrors handleClientSubmit — server now owns the file write)
-            String result = owner.sendVehicleInfo("localhost", 5000);
- 
-            if ("ACCEPTED".equals(result)) {
-                JOptionPane.showMessageDialog(this,
-                    "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
-                    "\nData saved to vehicular_cloud_log.txt");
-            } else if ("REJECTED".equals(result)) {
-                JOptionPane.showMessageDialog(this,
-                    "Registration Rejected by VC Controller.\nData was NOT saved.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Server Communication Error.");
-            }
- 
+           // Javonda (EDITED): run owner request in background so GUI does not freeze
+new Thread(() -> {
+    String result = owner.sendVehicleInfo("localhost", 5050);
+
+    SwingUtilities.invokeLater(() -> {
+        if ("ACCEPTED".equals(result)) {
+            JOptionPane.showMessageDialog(this,
+                "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
+                "\nData saved to vehicular_cloud_log.txt");
+        } else if ("REJECTED".equals(result)) {
+            JOptionPane.showMessageDialog(this,
+                "Registration Rejected by VC Controller.\nData was NOT saved.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Server Communication Error.");
+        }
+    });
+}).start();
+
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Vehicle Year must be a valid number.");
+            JOptionPane.showMessageDialog(this, "Vehicle year must be a valid number.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
         }
-    }
-    
+     }
+     
     // Gianna: client submit handler
     private void handleClientSubmit() {
         try {
@@ -386,20 +391,25 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
             Client client = new Client(clientID, jobDurationMinutes, jobDeadline);
 
             // milestone 5 - redirected data to socket in Client class by calling jobrequest, returns message based on response from server 
-            String result = client.jobRequest("localhost", 5000);
-            if( "ACCEPTED".equals(result)){
-                JOptionPane.showMessageDialog(this, "Job Accepted by Server");
-            } else if("REJECTED".equals(result)){
-                JOptionPane.showMessageDialog(this, "Job Rejected by Server");
-            }else{
-                JOptionPane.showMessageDialog(this,"Server Communication Error");
-            }
+          // Javonda (EDITED): run client request in background so GUI does not freeze
+new Thread(() -> {
+    String result = client.jobRequest("localhost", 5050);
+
+    SwingUtilities.invokeLater(() -> {
+        if ("ACCEPTED".equals(result)) {
+            JOptionPane.showMessageDialog(this, "Job Accepted by Server");
+        } else if ("REJECTED".equals(result)) {
+            JOptionPane.showMessageDialog(this, "Job Rejected by Server");
+        } else {
+            JOptionPane.showMessageDialog(this, "Server Communication Error");
+        }
+    });
+}).start();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Job duration must be a valid number.");
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this,
-                "Invalid deadline format. Please use: yyyy-MM-ddTHH:mm\nExample: 2025-04-01T14:30");
+            JOptionPane.showMessageDialog(this, "Deadline must be in format: yyyy-MM-ddTHH:mm");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
         }

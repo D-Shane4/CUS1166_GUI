@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class VCServer {
 
-    private static final int PORT = 5000;
+    private static final int PORT = 5050;
 
     // Javonda: shared controller state for pending request / controller decision
     private static String pendingRequest = null;
