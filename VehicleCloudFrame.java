@@ -89,28 +89,41 @@ public class VehicleCloudFrame extends JFrame {
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
-        // ── NEW: Welcome Panel
-        JPanel welcomePanel = new JPanel(new BorderLayout());
-        welcomePanel.setBackground(new Color(255, 220, 230));
+    //Welcome Panel
+    JPanel welcomePanel = new JPanel(new BorderLayout());
+    welcomePanel.setBackground(new Color(255, 220, 230));
 
-        JLabel welcomeTitle = new JLabel("Welcome to VCRTS", JLabel.CENTER);
-        welcomeTitle.setFont(new Font("Arial", Font.BOLD, 20));
+     // Title at the top
+     JLabel welcomeTitle = new JLabel("Welcome to VCRTS", JLabel.CENTER);
+     welcomeTitle.setFont(new Font("Arial", Font.BOLD, 24));
+     welcomeTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0)); // spacing
+     welcomePanel.add(welcomeTitle, BorderLayout.NORTH);
 
-        JTextArea description = new JTextArea(
-            "Vehicular Cloud Real-Time System (VCRTS)\n\n" +
-            "This system allows vehicle owners to share computing resources\n" +
-            "and clients to submit computational jobs.\n\n" +
-            "The controller assigns jobs efficiently based on timing\n" +
-            "and system availability."
-        );
-        description.setEditable(false);
-        description.setBackground(new Color(255, 220, 230));
+   // Description text in the center
+     JLabel description = new JLabel(
+    "<html><div style='text-align: center; width: 350px;'>"
+    + "<b>Vehicular Cloud Real-Time System (VCRTS)</b><br><br>"
+    + "This system allows vehicle owners to share computing resources "
+    + "and clients to submit computational jobs.<br><br>"
+    + "The controller assigns jobs efficiently based on timing "
+    + "and system availability."
+    + "</div></html>",
+    JLabel.CENTER
+);
+description.setFont(new Font("Arial", Font.PLAIN, 16));
 
-        startButton = new JButton("Start");
+// Wrap description in a GridBagLayout panel to center it vertically and horizontally
+JPanel centerWrapper = new JPanel(new GridBagLayout());
+centerWrapper.setBackground(new Color(255, 220, 230));
+centerWrapper.add(description);
+welcomePanel.add(centerWrapper, BorderLayout.CENTER);
 
-        welcomePanel.add(welcomeTitle, BorderLayout.NORTH);
-        welcomePanel.add(description, BorderLayout.CENTER);
-        welcomePanel.add(startButton, BorderLayout.SOUTH);
+// Start button at the bottom, centered
+startButton = new JButton("Start");
+JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+buttonWrapper.setBackground(new Color(255, 220, 230));
+buttonWrapper.add(startButton);
+welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
 
         
         
