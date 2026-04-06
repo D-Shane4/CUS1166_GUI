@@ -83,42 +83,5 @@ public class Owner extends User {
         }
     } 
 
-    //Sends the owner’s vehicle request to the server and returns whether it was accepted or rejected.
-    public String vehicleRequest(String host, int port) {
-
-        try (
-            // Connect to server
-            Socket client = new Socket(host, port);
-
-            // Send data to server
-            DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-
-            // Receive data from server
-            DataInputStream dis = new DataInputStream(client.getInputStream())
-        ) {
-
-            // Convert Owner request into string format
-            String data = fileText();
-
-            // SEND REQUEST TO SERVER
-            dos.writeUTF(data);
-            dos.flush();
-
-            // RECEIVE SERVER RESPONSE
-
-            String message = dis.readUTF();
-            System.out.println("Message: " + message);
-
-            // Final decision from the server 
-            String result = dis.readUTF();
-            System.out.println("Result: " + result);
-
-            return result;
-
-        } catch (Exception e) {
-            // Handle connection errors
-            e.printStackTrace();
-            return "ERROR";
-        }
+   
     }
-}
