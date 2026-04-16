@@ -4,7 +4,6 @@ public class VehicleCloudApp {
 
         javax.swing.SwingUtilities.invokeLater(() -> {
             new VehicleCloudFrame();   // owner/client window
-            new VCControllerFrame();   // separate controller window
         });
     }
 }
