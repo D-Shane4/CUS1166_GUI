@@ -15,7 +15,10 @@ private void showControllerFrame() {
         controllerFrame.setVisible(true);
         controllerFrame.toFront();
     }
-}
+}   
+     // Database Connect
+    private DatabaseConnection db;
+
     // ── Shanti: frame-level layout reference
     private CardLayout cardLayout;
     private JPanel cards;
@@ -61,6 +64,7 @@ private void showControllerFrame() {
     private java.util.Map<String, String[]> makeModelMap;
 
     public VehicleCloudFrame() {
+        db = new DatabaseConnection();
         setupFrame();       // Shanti
         createComponents(); // Hawa
         attachListeners();  // Gianna
@@ -630,15 +634,36 @@ private void showControllerFrame() {
 
         // Switch back to Swing UI thread to safely update the interface
         SwingUtilities.invokeLater(() -> {
+         
+        // If server accepted the vehicle registration // handling db logic
 
-        // If server accepted the vehicle registration
         if ("ACCEPTED".equals(result)) {
+            // Milestone 6 Hawa
+            db.insertUser(ownerID, "owner");
+            LocalDateTime timestamp = LocalDateTime.now(); // not being used
+            LocalDateTime jobDeadline = null; // owner does not use this
+
+            db.insertRequest(
+            "REQ-" + System.currentTimeMillis(),
+            ownerID,
+            timestamp,
+            vehicleID,
+            vehicleMake,
+            vehicleModel,
+            vehicleYear,
+            arrivalTime,
+            departureTime,
+            null,
+            jobDeadline
+        );
+
             JOptionPane.showMessageDialog(this,
                 "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
                 "\nData saved to vehicular_cloud_log.txt");
 
          // If server rejected the registration (ex. due to pending request or invalid data)
         } else if ("REJECTED".equals(result)) {
+
             JOptionPane.showMessageDialog(this,
                 "Registration Rejected by VC Controller.\nData was NOT saved.");
         // If something went wrong (connection issue, null response, etc.)
