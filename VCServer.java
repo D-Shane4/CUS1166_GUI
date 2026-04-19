@@ -139,27 +139,44 @@ public class VCServer {
        // 4. If accepted, persist to file (server owns the file — clients no longer
         //    call FileManager directly)
          
-        if ("ACCEPTED".equals(decision)) {
-            FileManager.saveRaw(data);   // see FileManager addition below
-            // gianna - if accepted send to database & file for completion time
-            db.insertUser(userId,userType);
-            db.insertRequest(
-            requestId,
-            userId,
-            timestamp,
-            vehicleID,
-            vehicleMake,
-            vehicleModel,
-            vehicleYear,
-            arrivalTime,
-            departureTime,
-            jobDuration,
-            jobDeadline);
+     if ("ACCEPTED".equals(decision)) {
+         FileManager.saveRaw(data);   // see FileManager addition below
+         // gianna - if accepted send to database & file for completion time
+         db.insertUser(userId,userType);
+         db.insertRequest(
+         requestId,
+         userId,
+         timestamp,
+         vehicleID,
+         vehicleMake,
+         vehicleModel,
+         vehicleYear,
+         arrivalTime,
+         departureTime,
+         jobDuration,
+         jobDeadline);
 
-            System.out.println("Decision: ACCEPTED — data saved to log & database.");
-        } else {
-            System.out.println("Decision: REJECTED — data NOT saved.");
-        }
+         System.out.println("Decision: ACCEPTED — data saved to log & database.");
+         // SHANTI 
+         db.insertUser(userId, userType); 
+         db.insertRequest(
+         requestId,
+         userId,
+         timestamp,
+         null,          // No vehicle data for client requests
+         null,          // Vehicle make not used
+         null,          // Vehicle model not used
+         0,             // Vehicle year not used
+         null,          // Arrival time not used for client jobs
+         null,          // Departure time not used for client jobs
+         jobDuration,   // Only job-related data is stored for client
+         jobDeadline);
+
+      System.out.println("Decision: ACCEPTED — data saved");
+     
+     } else {
+         System.out.println("Decision: REJECTED — data NOT saved.");
+     }
 
         // 5. Send the decision back to the caller
         dos.writeUTF(decision);
