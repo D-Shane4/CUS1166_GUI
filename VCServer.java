@@ -157,19 +157,12 @@ public class VCServer {
          jobDeadline);
 
          System.out.println("Decision: ACCEPTED — data saved to log & database.");
-         // SHANTI 
-         db.insertUser(userId, userType); 
-         db.insertRequest(
+         // SHANTI - Client inserts
+         db.clientInsert(
          requestId,
          userId,
          timestamp,
-         null,          // No vehicle data for client requests
-         null,          // Vehicle make not used
-         null,          // Vehicle model not used
-         0,             // Vehicle year not used
-         null,          // Arrival time not used for client jobs
-         null,          // Departure time not used for client jobs
-         jobDuration,   // Only job-related data is stored for client
+         jobDuration,   
          jobDeadline);
 
       System.out.println("Decision: ACCEPTED — data saved");
