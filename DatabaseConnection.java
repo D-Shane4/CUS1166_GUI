@@ -10,7 +10,7 @@ public class DatabaseConnection {
 
 	public DatabaseConnection() { // Constuctor , connects that datbase connection
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "codingisfun");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "password");
 		} catch (SQLException e) {
 			throw new RuntimeException("Database connection failed", e);
 		}
