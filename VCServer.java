@@ -87,7 +87,7 @@ public class VCServer {
         // 1. Read the incoming data string sent by Owner or Client
         //gianna edit - parse data to initalize later
         String data = dis.readUTF();
-        String [] parts = data.split("|");
+        String [] parts = data.split("\\|");
         System.out.println("\n--- Incoming Request ---");
         System.out.println(data);
 
