@@ -157,7 +157,7 @@ public class VCServer {
          jobDeadline);
 
          System.out.println("Decision: ACCEPTED — data saved to log & database.");
-         // SHANTI 
+         // SHANTI - Client inserts
          db.clientInsert(
          requestId,
          userId,
