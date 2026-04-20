@@ -43,10 +43,7 @@ public class DatabaseConnection {
 			Integer jobDuration, LocalDateTime jobDeadline) {
 
 		try {
-			String sql = "INSERT INTO requests "
-					+ "(request_id, user_id, timestamp, vehicle_id, vehicle_make, vehicle_model, vehicle_year, arrival_time, departure_time, job_duration, job_deadline) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+			String sql = "INSERT INTO requests (request_id, user_id, timestamp, job_duration, job_deadline) " + "VALUES (?, ?, ?, ?, ?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ps.setString(1, requestId);
