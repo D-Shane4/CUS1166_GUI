@@ -639,24 +639,7 @@ private void showControllerFrame() {
 
         if ("ACCEPTED".equals(result)) {
             // Milestone 6 Hawa
-            db.insertUser(ownerID, "owner");
-            LocalDateTime timestamp = LocalDateTime.now(); // not being used
-            LocalDateTime jobDeadline = null; // owner does not use this
-
-            db.insertRequest(
-            "REQ-" + System.currentTimeMillis(),
-            ownerID,
-            timestamp,
-            vehicleID,
-            vehicleMake,
-            vehicleModel,
-            vehicleYear,
-            arrivalTime,
-            departureTime,
-            null,
-            jobDeadline
-        );
-
+//MEHMET - DELETED UNNECESSARY CODE, DEBUGGING WORK
             JOptionPane.showMessageDialog(this,
                 "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
                 "\nData saved to vehicular_cloud_log.txt");
