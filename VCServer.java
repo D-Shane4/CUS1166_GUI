@@ -158,6 +158,7 @@ public class VCServer {
 
          System.out.println("Decision: ACCEPTED — data saved to log & database.");
          // SHANTI - Client inserts
+         if ("client".equalsIgnoreCase(userType)) 
          db.clientInsert(
          requestId,
          userId,
