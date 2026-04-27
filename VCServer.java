@@ -172,17 +172,19 @@ for (String part : parts) {
          jobDeadline);
 
          System.out.println("Decision: ACCEPTED — data saved to log & database.");
-         // SHANTI - Client inserts
-         if ("client".equalsIgnoreCase(userType)) 
-         db.clientInsert(
-         requestId,
-         userId,
-         timestamp,
-         jobDuration,   
-         jobDeadline);
+      // SHANTI - Client insert statements
+         if ("client".equalsIgnoreCase(userType)) {
+             db.clientInsert(
+                 requestId,
+                 userId,
+                 timestamp,
+                 jobDuration,
+                 jobDeadline
+             );
+         }
 
-      System.out.println("Decision: ACCEPTED — data saved");
-     
+         System.out.println("Decision: ACCEPTED — data saved to log & database.");
+
      } else {
          System.out.println("Decision: REJECTED — data NOT saved.");
      }
