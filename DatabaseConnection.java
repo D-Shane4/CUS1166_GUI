@@ -23,7 +23,7 @@ public class DatabaseConnection {
 	// Method for inserting into User Table that action listner will call
 	public void insertUser(String userId, String userType) {
 		try {
-			String sql = "INSERT INTO users (user_id, user_type) VALUES (?, ?)";
+			String sql = "INSERT IGNORE INTO users (user_id, user_type) VALUES (?, ?)";
 
 			PreparedStatement ps = conn.prepareStatement(sql);
 
@@ -43,26 +43,24 @@ public class DatabaseConnection {
 			Integer jobDuration, LocalDateTime jobDeadline) {
 
 		try {
-			String sql = "INSERT INTO requests "
-					+ "(request_id, user_id, timestamp, vehicle_id, vehicle_make, vehicle_model, vehicle_year, arrival_time, departure_time, job_duration, job_deadline) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+			String sql = "INSERT IGNORE INTO requests (request_id, user_id, owner_id, timestamp, vehicle_id, vehicle_make, vehicle_model, vehicle_year, arrival__time, departure_time, job_duration, job_deadline) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ps.setString(1, requestId);
 			ps.setString(2, userId);
-			ps.setObject(3, timestamp);
+			ps.setString(3, userId);
+			ps.setObject(4, timestamp);
 
-			ps.setString(4, vehicleId);
-			ps.setString(5, vehicleMake);
-			ps.setString(6, vehicleModel);
-			ps.setInt(7, vehicleYear);
+			ps.setString(5, vehicleId);
+			ps.setString(6, vehicleMake);
+			ps.setString(7, vehicleModel);
+			ps.setInt(8, vehicleYear);
 
-			ps.setString(8, arrivalTime);
-			ps.setString(9, departureTime);
+			ps.setString(9, arrivalTime);
+			ps.setString(10, departureTime);
 
-			ps.setObject(10, jobDuration);
-			ps.setObject(11, jobDeadline);
+			ps.setObject(11, jobDuration);
+			ps.setObject(12, jobDeadline);
 
 			ps.executeUpdate();
 
@@ -73,15 +71,16 @@ public class DatabaseConnection {
 
 	public void clientInsert(String requestID, String userID, LocalDateTime timestamp, Integer jobDuration,
 			LocalDateTime jobDeadline) {
-		String sql = "INSERT INTO requests " + "(request_id, user_id, timestamp, job_duration, job_deadline)"
-				+ "VALUES ( ?, ?, ? ,?, ?)";
+		String sql = "INSERT IGNORE INTO requests " + "(request_id, user_id, client_id, timestamp, job_duration, job_deadline)"
+				+ "VALUES ( ?, ?, ? ,?, ?, ?)";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, requestID);
 			ps.setString(2, userID);
-			ps.setObject(3, timestamp);
+			ps.setString(3, userID);
+			ps.setObject(4, timestamp);
 
-			ps.setObject(4, jobDuration);
-			ps.setObject(5, jobDeadline);
+			ps.setObject(5, jobDuration);
+			ps.setObject(6, jobDeadline);
 
 			ps.executeUpdate();
 		} catch (SQLException e) {

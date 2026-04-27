@@ -87,7 +87,7 @@ public class VCServer {
         // 1. Read the incoming data string sent by Owner or Client
         //gianna edit - parse data to initalize later
         String data = dis.readUTF();
-        String [] parts = data.split("|");
+        String [] parts = data.split("\\|"); //mehmet parsing fix
         System.out.println("\n--- Incoming Request ---");
         System.out.println(data);
 
@@ -117,25 +117,40 @@ public class VCServer {
 
         String decision = VCServer.getDecision();
 // gianna initalize variable from parsed data to add to database 
-          
-     String requestId = parts[0];
-     String userId = parts[1];
-     String userType = parts[2];
+//MEHMET DEBUGGING
+String requestId = "", userId = "", userType = "";
+String vehicleID = "", vehicleMake = "", vehicleModel = "";
+int vehicleYear = 0;
+String arrivalTime = "", departureTime = "";
+Integer jobDuration = null;
+LocalDateTime jobDeadline = null;
+LocalDateTime timestamp = LocalDateTime.now();
 
-     String vehicleID = parts[3];
-     String vehicleMake = parts[4];
-     String vehicleModel = parts[5];
-
-     int vehicleYear = Integer.parseInt(parts[6]);
-
-     String arrivalTime = parts[7];
-     String departureTime = parts[8];
-
-     Integer jobDuration = Integer.parseInt(parts[9]);
-
-     LocalDateTime jobDeadline = LocalDateTime.parse(parts[10]);
-
-     LocalDateTime timestamp = LocalDateTime.now();
+for (String part : parts) {
+    String trimmed = part.trim();
+    if (trimmed.startsWith("Request ID:"))
+        requestId = trimmed.substring("Request ID:".length()).trim();
+    else if (trimmed.startsWith("Owner ID:"))
+        { userId = trimmed.substring("Owner ID:".length()).trim(); userType = "owner"; }
+    else if (trimmed.startsWith("Client ID:"))
+        { userId = trimmed.substring("Client ID:".length()).trim(); userType = "client"; }
+    else if (trimmed.startsWith("Vehicle ID:"))
+        vehicleID = trimmed.substring("Vehicle ID:".length()).trim();
+    else if (trimmed.startsWith("Vehicle Make:"))
+        vehicleMake = trimmed.substring("Vehicle Make:".length()).trim();
+    else if (trimmed.startsWith("Vehicle Model:"))
+        vehicleModel = trimmed.substring("Vehicle Model:".length()).trim();
+    else if (trimmed.startsWith("Vehicle Year:"))
+        vehicleYear = Integer.parseInt(trimmed.substring("Vehicle Year:".length()).trim());
+    else if (trimmed.startsWith("Arrival Time:"))
+        arrivalTime = trimmed.substring("Arrival Time:".length()).trim();
+    else if (trimmed.startsWith("Departure Time:"))
+        departureTime = trimmed.substring("Departure Time:".length()).trim();
+    else if (trimmed.startsWith("Approx job duration (min):"))
+        jobDuration = Integer.parseInt(trimmed.substring("Approx job duration (min):".length()).trim());
+    else if (trimmed.startsWith("Job deadline:"))
+        jobDeadline = LocalDateTime.parse(trimmed.substring("Job deadline:".length()).trim());
+}
        // 4. If accepted, persist to file (server owns the file — clients no longer
         //    call FileManager directly)
          
