@@ -10,7 +10,7 @@ public class DatabaseConnection {
 
 	public DatabaseConnection() { // Constuctor , connects that datbase connection
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "password");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "Cameron345");
 		} catch (SQLException e) {
 			throw new RuntimeException("Database connection failed", e);
 		}
@@ -43,7 +43,11 @@ public class DatabaseConnection {
 			Integer jobDuration, LocalDateTime jobDeadline) {
 
 		try {
-			String sql = "INSERT IGNORE INTO requests (request_id, user_id, owner_id, timestamp, vehicle_id, vehicle_make, vehicle_model, vehicle_year, arrival__time, departure_time, job_duration, job_deadline) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT IGNORE INTO requests"
+			+ "(request_id, user_id, owner_id, timestamp, vehicle_id, "
+			+ "vehicle_make, vehicle_model, vehicle_year, arrival_time, departure_time, job_duration, job_deadline )" 
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			
 			PreparedStatement ps = conn.prepareStatement(sql);
 
 			ps.setString(1, requestId);
@@ -71,16 +75,16 @@ public class DatabaseConnection {
 
 	public void clientInsert(String requestID, String userID, LocalDateTime timestamp, Integer jobDuration,
 			LocalDateTime jobDeadline) {
-		String sql = "INSERT IGNORE INTO requests " + "(request_id, user_id, client_id, timestamp, job_duration, job_deadline)"
-				+ "VALUES ( ?, ?, ? ,?, ?, ?)";
+		String sql = "INSERT IGNORE INTO requests "
+        + "(request_id, user_id, timestamp, job_duration, job_deadline) "
+        + "VALUES (?, ?, ?, ?, ?)";
+
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setString(1, requestID);
 			ps.setString(2, userID);
-			ps.setString(3, userID);
-			ps.setObject(4, timestamp);
-
-			ps.setObject(5, jobDuration);
-			ps.setObject(6, jobDeadline);
+			ps.setObject(3, timestamp);
+			ps.setObject(4, jobDuration);
+			ps.setObject(5, jobDeadline);
 
 			ps.executeUpdate();
 		} catch (SQLException e) {

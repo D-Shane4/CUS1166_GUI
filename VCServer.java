@@ -4,6 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 
+
 public class VCServer {
     private static DatabaseConnection db = new DatabaseConnection();
 
@@ -81,50 +82,49 @@ public class VCServer {
 
         @Override
         public void run() {
-        try (DataInputStream  dis = new DataInputStream(socket.getInputStream());
-         DataOutputStream dos = new DataOutputStream(socket.getOutputStream())) {
+            try (DataInputStream dis = new DataInputStream(socket.getInputStream());
+                 DataOutputStream dos = new DataOutputStream(socket.getOutputStream())) {
 
-        // 1. Read the incoming data string sent by Owner or Client
-        //gianna edit - parse data to initalize later
-        String data = dis.readUTF();
-        String [] parts = data.split("\\|"); //mehmet parsing fix
-        System.out.println("\n--- Incoming Request ---");
-        System.out.println(data);
+                // 1. Read the incoming data string sent by Owner or Client
+                //gianna edit - parse data to initalize later
+                String data = dis.readUTF();
+                String[] parts = data.split("\\|"); //mehmet parsing fix
+                System.out.println("\n--- Incoming Request ---");
+                System.out.println(data);
 
-        // 2. Send acknowledgment immediately (assignment: "acknowledgment should
-        //    be sent upon receiving any request")
-        dos.writeUTF("Request received by VC Controller");
-        dos.flush();
+                // 2. Send acknowledgment immediately (assignment: "acknowledgment should
+                //    be sent upon receiving any request")
+                dos.writeUTF("Request received by VC Controller");
+                dos.flush();
 
-        // 3. Decide: ACCEPT or REJECT
-        //    Policy: accept if the data is non-empty and well-formed.
-        //    You can replace this logic with any business rule you need.
+                // 3. Decide: ACCEPT or REJECT
+                //    Policy: accept if the data is non-empty and well-formed.
 
-        // Javonda (EDITED): send the request to the VC Controller GUI
-        // so the controller can choose Accept or Reject instead of
-        // the server deciding automatically
-        VCServer.setPendingRequest(data);
+                // Javonda (EDITED): send the request to the VC Controller GUI
+                // so the controller can choose Accept or Reject instead of
+                // the server deciding automatically
+                VCServer.setPendingRequest(data);
 
-        // Javonda (EDITED): wait until the controller makes a decision
-        while (VCServer.getDecision() == null) {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
+                // Javonda (EDITED): wait until the controller makes a decision
+                while (VCServer.getDecision() == null) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
 
-        String decision = VCServer.getDecision();
-// gianna initalize variable from parsed data to add to database 
-//MEHMET DEBUGGING
-String requestId = "", userId = "", userType = "";
-String vehicleID = "", vehicleMake = "", vehicleModel = "";
-int vehicleYear = 0;
-String arrivalTime = "", departureTime = "";
-Integer jobDuration = null;
-LocalDateTime jobDeadline = null;
-LocalDateTime timestamp = LocalDateTime.now();
+                String decision = VCServer.getDecision();
+                // gianna initalize variable from parsed data to add to database 
+                //MEHMET DEBUGGING
+                String requestId = "", userId = "", userType = "";
+                String vehicleID = "", vehicleMake = "", vehicleModel = "";
+                int vehicleYear = 0;
+                String arrivalTime = "", departureTime = "";
+                Integer jobDuration = null;
+                LocalDateTime jobDeadline = null;
+                LocalDateTime timestamp = LocalDateTime.now();
 
 for (String part : parts) {
     String trimmed = part.trim();
@@ -172,40 +172,41 @@ for (String part : parts) {
          jobDeadline);
 
          System.out.println("Decision: ACCEPTED — data saved to log & database.");
-      // SHANTI - Client insert statements
-         if ("client".equalsIgnoreCase(userType)) {
-             db.clientInsert(
-                 requestId,
-                 userId,
-                 timestamp,
-                 jobDuration,
-                 jobDeadline
-             );
-         }
+         // SHANTI - Client inserts
+         db.clientInsert(
+         requestId,
+         userId,
+         timestamp,
+         jobDuration,   
+         jobDeadline);
 
-         System.out.println("Decision: ACCEPTED — data saved to log & database.");
-
+      System.out.println("Decision: ACCEPTED — data saved");
+     
      } else {
          System.out.println("Decision: REJECTED — data NOT saved.");
      }
 
-        // 5. Send the decision back to the caller
-        dos.writeUTF(decision);
-        dos.flush();
+                // 5. Send the decision back to the caller
+                dos.writeUTF(decision);
+                dos.flush();
 
-        // Javonda (EDITED): clear request after the controller finishes
-        VCServer.clearRequest();
+                // Javonda (EDITED): clear request after the controller finishes
+                VCServer.clearRequest();
 
-        } catch (Exception e) {
-        System.err.println("Handler error: " + e.getMessage());
-        e.printStackTrace();
-     } finally {
-        try { socket.close(); } catch (Exception ignored) {}
-    }
-}
+            } catch (Exception e) {
+                System.err.println("Handler error: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                try {
+                    socket.close();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
         private String evaluate(String data) {
-        // Javonda (EDITED): kept this method so existing code structure stays intact.
-        // The VC Controller GUI now makes the final Accept/Reject decision
+            // Javonda (EDITED): kept this method so existing code structure stays intact.
+            // The VC Controller GUI now makes the final Accept/Reject decision
             if (data == null || data.isBlank()) {
                 return "REJECTED";
             }

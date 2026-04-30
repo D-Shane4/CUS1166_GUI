@@ -176,8 +176,8 @@ private void showControllerFrame() {
         homePanel.add(clientButton, gbc);
 
         // Owner Panel Edited Javonda
-        JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
-        ownerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel ownerPanel = new JPanel();
+        ownerPanel.setLayout(new BoxLayout(ownerPanel, BoxLayout.Y_AXIS));
 
         // Text fields for user input
         ownerIDField = new JTextField(15);
@@ -491,9 +491,9 @@ private void showControllerFrame() {
     label.setPreferredSize(new Dimension(180, 25));
 
     // Set fixed sizes for the time dropdowns for better alignment
-    hourBox.setPreferredSize(new Dimension(60, 25));
-    minuteBox.setPreferredSize(new Dimension(60, 25));
-    amPmBox.setPreferredSize(new Dimension(80, 25));
+    hourBox.setPreferredSize(new Dimension(90, 30));
+    minuteBox.setPreferredSize(new Dimension(90, 30));
+    amPmBox.setPreferredSize(new Dimension(100, 30));
 
      // Add components to the row in order: label, hour dropdown, ":", minute dropdown, AM/PM dropdown
     row.add(label);
@@ -624,6 +624,12 @@ private void showControllerFrame() {
 
             showControllerFrame(); // Show the controller frame immediately after submitting owner info, before waiting for server response, to improve user experience and provide feedback that the submission is being processed
 
+            JOptionPane.showMessageDialog(
+                 this,
+                "Owner request submitted!",
+                "Submitted",
+                JOptionPane.INFORMATION_MESSAGE
+);
         // Javonda (EDITED): run owner request in background so GUI does not freeze
         // Create a new thread so the GUI does not freeze while sending data to server
 
@@ -689,6 +695,13 @@ private void showControllerFrame() {
          showControllerFrame(); // Show the controller frame immediately after submitting client info, before waiting for server response, to improve user experience and provide feedback that the submission is being processed
         // milestone 5 - redirected data to socket in Client class by calling jobrequest, returns message based on response from server 
         // Javonda (EDITED): run client request in background so GUI does not freeze
+            JOptionPane.showMessageDialog(
+                this,
+                "Client request submitted!",
+                "Submitted",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+
         new Thread(() -> {
             String result = client.jobRequest("localhost", 5050);
 
