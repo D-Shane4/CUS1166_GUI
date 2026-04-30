@@ -80,3 +80,17 @@ Request ID: vonda-1777577590169 | Client ID: vonda | Timestamp: 2026-04-30T15:33
 
 Request ID: gerome-1777578343827 | Client ID: gerome | Timestamp: 2026-04-30T15:45:43.826686 | Approx job duration (min): 51 | Job deadline: 2026-06-04T03:25
 
+Request ID: new client-1777579480302 | Client ID: new client | Timestamp: 2026-04-30T16:04:40.301466 | Approx job duration (min): 46 | Job deadline: 2027-05-31T12:12
+
+Request ID: new client-1777579492540 | Client ID: new client | Timestamp: 2026-04-30T16:04:52.540410 | Approx job duration (min): 46 | Job deadline: 2027-05-31T12:12
+
+Request ID: trutin-1777579532766 | Owner ID: trutin | Timestamp: 2026-04-30T16:05:32.765901 | Vehicle ID: 03 | Vehicle Model: Pilot | Vehicle Make: Honda | Vehicle Year: 2024 | Arrival Time: 05:04 PM | Departure Time: 10:08 PM
+
+Request ID: homer simpson-1777580177863 | Owner ID: homer simpson | Timestamp: 2026-04-30T16:16:17.860698 | Vehicle ID: 56 | Vehicle Model: Accord | Vehicle Make: Honda | Vehicle Year: 1997 | Arrival Time: 02:03 PM | Departure Time: 04:03 PM
+
+Request ID: marge simpson-1777580211357 | Client ID: marge simpson | Timestamp: 2026-04-30T16:16:51.356999 | Approx job duration (min): 31 | Job deadline: 2027-05-01T04:44
+
+Request ID: bart simpson-1777580456857 | Owner ID: bart simpson | Timestamp: 2026-04-30T16:20:56.849029 | Vehicle ID: 34 | Vehicle Model: X5 | Vehicle Make: BMW | Vehicle Year: 2013 | Arrival Time: 03:45 PM | Departure Time: 11:28 PM
+
+Request ID: peter griffin-1777580748469 | Owner ID: peter griffin | Timestamp: 2026-04-30T16:25:48.466899 | Vehicle ID: 66 | Vehicle Model: 5 Series | Vehicle Make: BMW | Vehicle Year: 2020 | Arrival Time: 03:04 PM | Departure Time: 05:05 PM
+

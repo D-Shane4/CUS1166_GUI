@@ -158,34 +158,42 @@ for (String part : parts) {
          FileManager.saveRaw(data);   // see FileManager addition below
          // gianna - if accepted send to database & file for completion time
          db.insertUser(userId,userType);
-         db.insertRequest(
-         requestId,
-         userId,
-         timestamp,
-         vehicleID,
-         vehicleMake,
-         vehicleModel,
-         vehicleYear,
-         arrivalTime,
-         departureTime,
-         jobDuration,
-         jobDeadline);
 
-         System.out.println("Decision: ACCEPTED — data saved to log & database.");
+        if ("owner".equals(userType)) {
+            db.insertRequest(
+                requestId, 
+                userId,
+                timestamp,
+                vehicleID,
+                vehicleMake, 
+                vehicleModel, 
+                vehicleYear,
+                arrivalTime,
+                departureTime, 
+                null,
+                null    
+            );
+        
+
+         System.out.println("Decision: ACCEPTED —owner data saved to log & database.");
+         
          // SHANTI - Client inserts
-         db.clientInsert(
+ } else if ("client".equals(userType)) {
+    db.clientInsert(
          requestId,
          userId,
          timestamp,
          jobDuration,   
-         jobDeadline);
+         jobDeadline
+        
+        );
 
-      System.out.println("Decision: ACCEPTED — data saved");
-     
-     } else {
-         System.out.println("Decision: REJECTED — data NOT saved.");
-     }
-
+      System.out.println("Decision: ACCEPTED — client data saved");
+    } 
+} else {
+         System.out.println("Decision: REJECTED — data not saved.");
+     } 
+      
                 // 5. Send the decision back to the caller
                 dos.writeUTF(decision);
                 dos.flush();
