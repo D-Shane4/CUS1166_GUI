@@ -10,7 +10,7 @@ public class DatabaseConnection {
 
 	public DatabaseConnection() { // Constuctor , connects that datbase connection
 		try {
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "Cameron345");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vcrts_db", "root", "password");
 		} catch (SQLException e) {
 			throw new RuntimeException("Database connection failed", e);
 		}
@@ -21,50 +21,28 @@ public class DatabaseConnection {
 	}
 
 	// Method for inserting into User Table that action listner will call
-	public void insertUser(String userId, String userType) {
-		try {
-			String sql = "INSERT IGNORE INTO users (user_id, user_type) VALUES (?, ?)";
-
-			PreparedStatement ps = conn.prepareStatement(sql);
-
-			ps.setString(1, userId);
-			ps.setString(2, userType);
-
-			ps.executeUpdate();
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
 
 // Method for request table 
-	public void insertRequest(String requestId, String userId, LocalDateTime timestamp, String vehicleId,
-			String vehicleMake, String vehicleModel, int vehicleYear, String arrivalTime, String departureTime,
-			Integer jobDuration, LocalDateTime jobDeadline) {
+	public void insertRequest(String ownerId, String requestId, String vehicleId,
+			String vehicleMake, String vehicleModel, int vehicleYear, String arrivalTime, String departureTime, LocalDateTime timestamp) {
 
 		try {
-			String sql = "INSERT INTO requests"
-			+ "(request_id, user_id, timestamp, vehicle_id, "
-			+ "vehicle_make, vehicle_model, vehicle_year, arrival_time, departure_time, job_duration, job_deadline )" 
-			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO owner_requests"
+			+ "(owner_id, request_id, vehicle_id, vehicle_make, "
+			+ "vehicle_model, vehicle_year, arrival_time, departure_time, timestamp)" 
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = conn.prepareStatement(sql);
 
-			ps.setString(1, requestId);
-			ps.setString(2, userId);
-			ps.setObject(3, timestamp);
-
-			ps.setString(4, vehicleId);
-			ps.setString(5, vehicleMake);
-			ps.setString(6, vehicleModel);
-			ps.setInt(7, vehicleYear);
-
-			ps.setString(8, arrivalTime);
-			ps.setString(9, departureTime);
-
-			ps.setObject(10, jobDuration);
-			ps.setObject(11, jobDeadline);
-
+			ps.setString(1, ownerId);
+			ps.setString(2, requestId);
+			ps.setString(3, vehicleId);       
+			ps.setString(4, vehicleMake);
+			ps.setString(5, vehicleModel);
+			ps.setInt(6, vehicleYear);
+			ps.setString(7, arrivalTime);
+			ps.setString(8, departureTime);
+			ps.setObject(9, timestamp);
 			ps.executeUpdate();
 
 		} catch (SQLException e) {
@@ -72,18 +50,18 @@ public class DatabaseConnection {
 		}
 	}
 
-	public void clientInsert(String requestID, String userID, LocalDateTime timestamp, Integer jobDuration,
+	public void clientInsert(String clientID, String requestId, LocalDateTime timestamp, Integer jobDuration,
 			LocalDateTime jobDeadline) {
-		String sql = "INSERT INTO requests "
-        + "(request_id, user_id, timestamp, job_duration, job_deadline) "
+		String sql = "INSERT INTO client_requests "
+        + "(client_id, request_id, job_duration, job_deadline, timestamp) "
         + "VALUES (?, ?, ?, ?, ?)";
 
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
-			ps.setString(1, requestID);
-			ps.setString(2, userID);
-			ps.setObject(3, timestamp);
-			ps.setObject(4, jobDuration);
-			ps.setObject(5, jobDeadline);
+			ps.setString(1, clientID);
+			ps.setString(2,requestId );
+			ps.setObject(3, jobDuration);
+			ps.setObject(4, jobDeadline);
+			ps.setObject(5, timestamp);
 
 			ps.executeUpdate();
 		} catch (SQLException e) {

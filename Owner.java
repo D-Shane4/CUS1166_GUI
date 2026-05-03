@@ -4,84 +4,98 @@ import java.net.Socket;
 
 public class Owner extends User {
 
-    private String vehicleID;
-    private String vehicleModel;
-    private String vehicleMake;
-    private int vehicleYear;
-    private String arrivalTime;
-    private String departureTime;
+	private String vehicleID;
+	private String vehicleModel;
+	private String vehicleMake;
+	private int vehicleYear;
+	private String arrivalTime;
+	private String departureTime;
 
-    // UNIQUE REQUEST ID
-    private final String requestID;
+	// UNIQUE REQUEST ID
+	private final String requestID;
 
-    // CONSTRUCTOR
-    public Owner(String ownerID, String vehicleID, String vehicleModel, String vehicleMake,
-                 int vehicleYear, String arrivalTime, String departureTime) {
-        super(ownerID);
-        this.vehicleID = vehicleID;
-        this.vehicleModel = vehicleModel;
-        this.vehicleMake = vehicleMake;
-        this.vehicleYear = vehicleYear;
-        this.arrivalTime = arrivalTime;
-        this.departureTime = departureTime;
+	// CONSTRUCTOR
+	public Owner(String ownerID, String vehicleID, String vehicleModel, String vehicleMake, int vehicleYear,
+			String arrivalTime, String departureTime) {
+		super(ownerID);
+		this.vehicleID = vehicleID;
+		this.vehicleModel = vehicleModel;
+		this.vehicleMake = vehicleMake;
+		this.vehicleYear = vehicleYear;
+		this.arrivalTime = arrivalTime;
+		this.departureTime = departureTime;
 
-        // Generate unique request ID using ownerID + timestamp
-        this.requestID = ownerID + "-" + System.currentTimeMillis();
-    }
+		// Generate unique request ID using ownerID + timestamp
+		this.requestID = ownerID + "-" + System.currentTimeMillis();
+	}
 
-    public String getVehicleID()    { return vehicleID; }
-    public String getVehicleModel() { return vehicleModel; }
-    public String getVehicleMake()  { return vehicleMake; }
-    public int getVehicleYear()     { return vehicleYear; }
-    public String getArrivalTime()  { return arrivalTime; }
-    public String getDepartureTime(){ return departureTime; }
+	public String getVehicleID() {
+		return vehicleID;
+	}
 
-    // Getter for request ID (useful for tracking/debugging)
-    public String getRequestID() {
-        return requestID;
-    }
+	public String getVehicleModel() {
+		return vehicleModel;
+	}
 
-    @Override
-    public String fileText() {
-        // This formats all Owner data into a single string
-        // that can be saved or sent over the network
-        return "Request ID: " + requestID +
-               " | Owner ID: " + ID +
-               " | Timestamp: " + time +
-               " | Vehicle ID: " + vehicleID +
-               " | Vehicle Model: " + vehicleModel +
-               " | Vehicle Make: " + vehicleMake +
-               " | Vehicle Year: " + vehicleYear +
-               " | Arrival Time: " + arrivalTime +
-               " | Departure Time: " + departureTime;
-    }
+	public String getVehicleMake() {
+		return vehicleMake;
+	}
 
-    // SOCKET METHOD 
-    public String sendVehicleInfo(String host, int port) {
-        try (Socket socket = new Socket(host, port);
-             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-             DataInputStream dis = new DataInputStream(socket.getInputStream())) {
+	public int getVehicleYear() {
+		return vehicleYear;
+	}
 
-            String data = fileText();
+	public String getArrivalTime() {
+		return arrivalTime;
+	}
 
-            // send data
-            dos.writeUTF(data);
-            dos.flush();
+	public String getDepartureTime() {
+		return departureTime;
+	}
 
-            // receive response
-            String message = dis.readUTF();
-            System.out.println("Message: " + message);
+	// Getter for request ID (useful for tracking/debugging)
+	public String getRequestID() {
+		return requestID;
+	}
 
-            String result = dis.readUTF();
-            System.out.println("Result: " + result);
+	@Override
+	public String fileText() {
+		// This formats all Owner data into a single string
+		// that can be saved or sent over the network
+		if (requestID == null || requestID.trim().isEmpty()) {
+			throw new IllegalStateException("requestID is missing before sending OWNER message");
+		}
+		return "Request ID: " + requestID + " | Owner ID: " + ID + " | Timestamp: " + time + " | Vehicle ID: "
+				+ vehicleID + " | Vehicle Model: " + vehicleModel + " | Vehicle Make: " + vehicleMake
+				+ " | Vehicle Year: " + vehicleYear + " | Arrival Time: " + arrivalTime + " | Departure Time: "
+				+ departureTime;
+	}
 
-            return result;
+	// SOCKET METHOD
+	public String sendVehicleInfo(String host, int port) {
+		try (Socket socket = new Socket(host, port);
+				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+				DataInputStream dis = new DataInputStream(socket.getInputStream())) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "ERROR";
-        }
-    } 
+			String data = fileText();
 
-   
-    }
+			// send data
+			dos.writeUTF(data);
+			dos.flush();
+
+			// receive response
+			String message = dis.readUTF();
+			System.out.println("Message: " + message);
+
+			String result = dis.readUTF();
+			System.out.println("Result: " + result);
+
+			return result;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "ERROR";
+		}
+	}
+
+}
